@@ -54,13 +54,16 @@ const HashListContainer = styled.div`
     outline: none;
 `;
 
-const ProfilePic = styled.img`
+const ProfilePic = styled.div<{imgUrl?: string}>`
     width: 2em;
     height: 2em;
     border-radius: 50%;
     border: none;
     background-size: contain;
     background-color: #dcdcdc;
+    background-image: ${(props) => `url(${props.imgUrl})`};
+    background-size: cover;
+    background-position: center;
 `;
 
 const Username = styled.p`
@@ -256,7 +259,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             <Col>
                                 <Row align="center" gap={"0.5em"}>
                                     <Col justify="center">
-                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic src={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
+                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
                                     </Col>
                                     <Col>
                                         <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable>{userName}</Username></Row>
