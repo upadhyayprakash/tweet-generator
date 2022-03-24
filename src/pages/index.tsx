@@ -1,10 +1,17 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useState } from 'react'
 
-import Counter from '../features/counter/Counter'
+import TweetCardSimple from '../features/tweetCardSimple/TweetCardSimple'
 import styles from '../styles/Home.module.css'
 
 const IndexPage: NextPage = () => {
+  const [content, setContent] = useState<string>('');
+  const handleTweetChange = (tweetText: string) => setContent(tweetText);
+
+  const [tagContent, setTagContent] = useState<string[]>([]); // array of string tokens
+  const handleTagChange = (tags: string[]) => setTagContent(tags);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,49 +19,20 @@ const IndexPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className={styles.header}>
-        <img src="/logo.svg" className={styles.logo} alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className={styles.link}
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className={styles.link}
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className={styles.link}
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className={styles.link}
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
+        <TweetCardSimple
+          userHandle='@prakashupadhyay'
+          userName='Prakash Upadhyay'
+          userImageUrl='https://github.com/upadhyayprakash/upadhyayprakash.github.io/blob/master/pic-face.jpeg?raw=true'
+          tweet="Write your message..."
+          limit={140}
+          hashTags={["hash", "tags", "here"]}
+          timestamp={new Date()}
+          deviceName="iPhone"
+          onChange={handleTweetChange}
+          onTagChange={handleTagChange}
+        />
+        {/* <p>{content}</p>
+        <p>{tagContent.map(e => <span>{e}</span>)}</p> */}
       </header>
     </div>
   )
