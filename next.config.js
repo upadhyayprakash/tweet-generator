@@ -1,7 +1,7 @@
 // next.config.js
 const withReactSvg = require("next-react-svg");
 const path = require("path");
-const isProd = (process.env.NODE_ENV || 'production') === 'production'
+const isProd = (process.env.NODE_ENV || "production") === "production";
 
 module.exports = withReactSvg({
   include: path.resolve(__dirname, "public/icons"),
@@ -12,5 +12,6 @@ module.exports = withReactSvg({
   exportPathMap: () => ({
     "/": { page: "/" },
   }),
-  assetPrefix: isProd ? '/tweet-generator/' : '',
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
+  assetPrefix: isProd ? process.env.NEXT_PUBLIC_BASE_PATH : "",
 });
