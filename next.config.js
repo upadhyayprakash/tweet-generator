@@ -12,6 +12,6 @@ module.exports = withReactSvg({
   exportPathMap: () => ({
     "/": { page: "/" },
   }),
-  basePath: '/tweet-generator',
-  assetPrefix: isProd ? '/tweet-generator' : "",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
+  assetPrefix: isProd ? process.env.NEXT_PUBLIC_BASE_PATH : "",
 });

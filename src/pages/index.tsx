@@ -5,6 +5,8 @@ import { useState } from 'react'
 import TweetCardSimple from '../features/tweetCardSimple/TweetCardSimple'
 import styles from '../styles/Home.module.css'
 
+const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 const IndexPage: NextPage = () => {
   const [content, setContent] = useState<string>('');
   const handleTweetChange = (tweetText: string) => setContent(tweetText);
@@ -16,7 +18,7 @@ const IndexPage: NextPage = () => {
     <div className={styles.container}>
       <Head>
         <title>Redux Toolkit</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href={prefix + "/favicon.ico"} />
       </Head>
       <header className={styles.header}>
         <TweetCardSimple
