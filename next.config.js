@@ -9,9 +9,6 @@ module.exports = withReactSvg({
     // ssr and displayName are configured by default
     styledComponents: true,
   },
-  exportPathMap: () => ({
-    "/": { page: "/" },
-  }),
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   assetPrefix: isProd ? process.env.NEXT_PUBLIC_BASE_PATH : "",
 });
