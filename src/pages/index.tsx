@@ -17,7 +17,7 @@ const IndexPage: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Redux Toolkit</title>
+        <title>Fake Tweet Generator</title>
         <link rel="icon" href={prefix + "/favicon.ico"} />
       </Head>
       <header className={styles.header}>
