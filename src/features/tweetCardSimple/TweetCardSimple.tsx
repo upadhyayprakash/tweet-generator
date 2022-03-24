@@ -187,9 +187,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const handleDownload = (type) => {
         if (type === 'png') {
-            toJpeg(document.getElementById("tweetContent"), {
-                imagePlaceholder: 'https://github.com/upadhyayprakash/upadhyayprakash.github.io/blob/master/pic-face.jpeg?raw=true'
-            }).then(function (dataUrl) {
+            toJpeg(document.getElementById("tweetContent"), {}).then(function (dataUrl) {
                 var link = document.createElement('a');
                 link.download = 'tweet-export.png' + (new Date().getTime());
                 link.href = dataUrl;

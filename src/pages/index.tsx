@@ -24,7 +24,7 @@ const IndexPage: NextPage = () => {
         <TweetCardSimple
           userHandle='@prakashupadhyay'
           userName='Prakash Upadhyay'
-          userImageUrl='https://github.com/upadhyayprakash/upadhyayprakash.github.io/blob/master/pic-face.jpeg?raw=true'
+          userImageUrl={prefix + '/faces/man-face.jpeg'}
           tweet="Write your message..."
           limit={140}
           hashTags={["hash", "tags", "here"]}
