@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "dev": "next",
-    "build": "next build && next export",
+    "build": "next build",
+    "export": "next export",
     "start": "next start",
     "type-check": "tsc",
     "test": "jest",
