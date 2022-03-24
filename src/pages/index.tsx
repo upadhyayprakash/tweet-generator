@@ -25,7 +25,7 @@ const IndexPage: NextPage = () => {
           userHandle='@prakashupadhyay'
           userName='Prakash Upadhyay'
           userImageUrl={prefix + '/faces/man-face.jpeg'}
-          tweet="Write your message..."
+          tweet="Write your message.."
           limit={140}
           hashTags={["hash", "tags", "here"]}
           timestamp={new Date()}
