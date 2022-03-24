@@ -17,6 +17,7 @@ enum Themes {
 const Container = styled.div`
     padding: 4em 4em;
     width: 100%;
+    max-width: 700px;
     background-color: #e6e6e6;
     display: flex;
     align-items: center;
