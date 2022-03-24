@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
 import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
 import { Col, Row } from '../../components/commons';
@@ -15,8 +15,15 @@ enum Themes {
 }
 
 const Container = styled.div`
-    padding: 5em;
+    padding: 4em 4em;
+    width: 100%;
     background-color: #e6e6e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media (max-width: 425px) {
+        padding: 4em 2em;
+    };
 `;
 
 const Button = styled.button`
@@ -35,6 +42,9 @@ const HashTag = styled.span`
     font-size: 1.3rem;
     font-weight: 400;
     color: #1DA1F2;
+    @media (max-width: 425px) {
+        font-size: 1.2rem;
+    };
 `;
 
 const HashListContainer = styled.div`
@@ -57,11 +67,17 @@ const Username = styled.p`
     font-weight: 600;
     font-size: 1rem;
     outline: none;
+    @media (max-width: 425px) {
+        font-size: 0.8rem;
+    };
 `;
 const Userhandle = styled.p`
     font-size: 1rem;
     color: #7c7c7c;
     outline: none;
+    @media (max-width: 425px) {
+        font-size: 0.8rem;
+    };
 `;
 
 interface SmallTextProps {
@@ -72,6 +88,9 @@ const SmallText = styled.p<SmallTextProps>`
     font-size: 1rem;
     color: ${(props) => props.disabled ? '#8c8c8c' : props.color === "primary" ? "#1DA1F2" : 'black'};
     white-space: nowrap;
+    @media (max-width: 425px) {
+        font-size: 0.8rem;
+    };
 `;
 
 const Dot = styled.div`
@@ -97,20 +116,25 @@ const TweetTextInput = styled.div`
     color: #262626;
     width: 100%;
     font-family: Ubuntu, Arial;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 2rem;
     font-weight: 400;
     text-align: left;
     margin-bottom: 1em;
     outline: none;
+    @media (max-width: 425px) {
+        font-size: 1.1rem;
+        line-height: 1.6rem;
+    };
 `;
 
 const TweetContainer = styled.div`
     padding: 1em 1em;
+    width: 100%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 500px;
     background-color: white;
     box-shadow:
         0px 0px 2.2px rgba(0, 0, 0, 0.034),
@@ -136,6 +160,9 @@ interface TweetCardSimpleProps {
     onTagChange: (s: string[]) => any;
 }
 const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userImageUrl, tweet, limit = 140, imageUrl, hashTags, theme, timestamp, deviceName, onChange, onTagChange }) => {
+    const [selectedFile, setSelectedFile] = useState()
+    const [userImage, setUserImage] = useState(userImageUrl);
+
     const tweetInputRef = useRef<HTMLDivElement>(null);
     const lastTweet = useRef<string>();
 
@@ -147,6 +174,30 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const userhandleRef = useRef<HTMLDivElement>(null);
     const lastUserhandle = useRef<string>();
+
+    // create a preview as a side effect, whenever selected file is changed
+    useEffect(() => {
+        if (!selectedFile) {
+            setUserImage(userImageUrl)
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(selectedFile)
+        setUserImage(objectUrl)
+
+        // free memory when ever this component is unmounted
+        return () => URL.revokeObjectURL(objectUrl)
+    }, [selectedFile])
+
+    const onSelectFile = (e) => {
+        if (!e.target.files || e.target.files.length === 0) {
+            setSelectedFile(undefined)
+            return
+        }
+
+        // I've kept this example simple by using the first image instead of multiple
+        setSelectedFile(e.target.files[0])
+    }
 
     const handleChange = () => { // Approach: https://stackoverflow.com/a/70028295
         const currTweet = tweetInputRef.current?.innerText || '';
@@ -189,7 +240,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
         if (type === 'png') {
             toJpeg(document.getElementById("tweetContent"), {}).then(function (dataUrl) {
                 var link = document.createElement('a');
-                link.download = 'tweet-export.png' + (new Date().getTime());
+                link.download = 'tweet-export' + (new Date().getTime()) + '.png';
                 link.href = dataUrl;
                 link.click();
             })
@@ -197,64 +248,58 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     }
 
     return (
-        <div>
-            <Container id="tweetContent">
-                <TweetContainer>
-                    <Row align="center" margin="0.5em 0" justify='space-between'>
-                        <Col>
-                            <Row align="center" gap={"0.5em"}>
-                                <Col justify="center">
-                                    <Row><ProfilePic src={userImageUrl}></ProfilePic></Row>
-                                </Col>
-                                <Col>
-                                    <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable>{userName}</Username></Row>
-                                    <Row><Userhandle ref={userhandleRef} onInput={handleUserhandleChange} contentEditable>{userHandle}</Userhandle></Row>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <TwitterIcon width={'2em'} height={'2em'} fill="#1DA1F2" />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <TweetTextInput suppressContentEditableWarning={true} ref={tweetInputRef} onInput={handleChange} contentEditable>{tweet}</TweetTextInput>
-                    </Row>
-                    <Row>
-                        <HashListContainer ref={tagInputRef} onInput={handleTagChange} contentEditable>{hashTags.map((tag, idx) => <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>)}</HashListContainer>
-                    </Row>
-                    <Row margin="1em 0 0" align='center' gap="0.5em">
-                        <Col><SmallText disabled>{timestamp.getHours() % 12 ? timestamp.getHours() % 12 : 12}:{timestamp.getMinutes() < 10 ? '0' + timestamp.getMinutes() : timestamp.getMinutes()} {+ (timestamp.getHours() >= 12) ? 'PM' : 'AM'}</SmallText></Col>
-                        <Col><Dot /></Col>
-                        <Col><SmallText disabled>{(timestamp.getDate()) + "/" + (timestamp.getMonth() + 1) + "/" + (timestamp.getFullYear())}</SmallText></Col>
-                        <Col><Dot /></Col>
-                        <Col><SmallText color="primary">Twitter for {deviceName}</SmallText></Col>
-                    </Row>
-                    <HR thickness='0.05em' />
-                    <Row justify='space-around'>
-                        <Col>
-                            <ReplyIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
-                        </Col>
-                        <Col>
-                            <RetweetIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
-                        </Col>
-                        <Col>
-                            <LikeIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
-                        </Col>
-                        <Col>
-                            <ShareIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
-                        </Col>
-                    </Row>
-                    <HR thickness='0.05em' />
-                    {/* <Row>
-                <p>{limit}</p>
-            </Row> */}
-                    {/* <Row>
-                <p>{imageUrl}</p>
-            </Row> */}
-                    {/* <p>{theme}</p> */}
-
-                </TweetContainer>
-            </Container>
+        <div style={{ width: '100%' }}>
+            <Row justify='center'>
+                <Container id="tweetContent">
+                    <TweetContainer>
+                        <Row align="center" margin="0.5em 0" justify='space-between'>
+                            <Col>
+                                <Row align="center" gap={"0.5em"}>
+                                    <Col justify="center">
+                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic src={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
+                                    </Col>
+                                    <Col>
+                                        <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable>{userName}</Username></Row>
+                                        <Row><Userhandle ref={userhandleRef} onInput={handleUserhandleChange} contentEditable>{userHandle}</Userhandle></Row>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col>
+                                <TwitterIcon width={'2em'} height={'2em'} fill="#1DA1F2" />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <TweetTextInput suppressContentEditableWarning={true} ref={tweetInputRef} onInput={handleChange} contentEditable>{tweet}</TweetTextInput>
+                        </Row>
+                        <Row>
+                            <HashListContainer ref={tagInputRef} onInput={handleTagChange} contentEditable>{hashTags.map((tag, idx) => <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>)}</HashListContainer>
+                        </Row>
+                        <Row margin="1em 0 0" align='center' gap="0.5em">
+                            <Col><SmallText disabled>{timestamp.getHours() % 12 ? timestamp.getHours() % 12 : 12}:{timestamp.getMinutes() < 10 ? '0' + timestamp.getMinutes() : timestamp.getMinutes()} {+ (timestamp.getHours() >= 12) ? 'PM' : 'AM'}</SmallText></Col>
+                            <Col><Dot /></Col>
+                            <Col><SmallText disabled>{(timestamp.getDate()) + "/" + (timestamp.getMonth() + 1) + "/" + (timestamp.getFullYear())}</SmallText></Col>
+                            <Col><Dot /></Col>
+                            <Col><SmallText color="primary">Twitter for {deviceName}</SmallText></Col>
+                        </Row>
+                        <HR thickness='0.05em' />
+                        <Row justify='space-around'>
+                            <Col>
+                                <ReplyIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
+                            </Col>
+                            <Col>
+                                <RetweetIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
+                            </Col>
+                            <Col>
+                                <LikeIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
+                            </Col>
+                            <Col>
+                                <ShareIcon width={'1em'} height={'1em'} fill="#6c6c6c" />
+                            </Col>
+                        </Row>
+                        <HR thickness='0.05em' />
+                    </TweetContainer>
+                </Container>
+            </Row>
             <Button onClick={() => handleDownload('png')}>Export as PNG</Button>
         </div>
     )
