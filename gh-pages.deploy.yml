@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NEXT_PUBLIC_BASE_PATH: /tweet-generator/docs
+      NEXT_PUBLIC_BASE_PATH: /tweet-generator
 
     strategy:
       matrix:
