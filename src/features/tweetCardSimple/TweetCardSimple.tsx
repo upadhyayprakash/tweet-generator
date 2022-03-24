@@ -34,7 +34,7 @@ const Button = styled.button`
     background-color: #1DA1F2;
     color: white;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 1px;
 `;
 
@@ -54,7 +54,7 @@ const HashListContainer = styled.div`
     outline: none;
 `;
 
-const ProfilePic = styled.div<{imgUrl?: string}>`
+const ProfilePic = styled.div<{ imgUrl?: string }>`
     width: 2em;
     height: 2em;
     border-radius: 50%;
@@ -242,8 +242,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     const handleDownload = (type) => {
         if (type === 'png') {
             toJpeg(document.getElementById("tweetContent"), {}).then(function (dataUrl) {
-                var link = document.createElement('a');
-                link.download = 'tweet-export' + (new Date().getTime()) + '.png';
+                let dateTime = new Date();
+                let dateTimeStr = dateTime.getFullYear() + "-" + (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + " " + dateTime.getHours() + "H" + (dateTime.getMinutes() < 10 ? "0" + dateTime.getMinutes() : dateTime.getMinutes()) + "M";
+                let link = document.createElement('a');
+                link.download = 'tweet-export-' + dateTimeStr + '.png';
                 link.href = dataUrl;
                 link.click();
             })
