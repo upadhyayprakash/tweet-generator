@@ -7,7 +7,6 @@ import RetweetIcon from '../../../public/icons/RetweetIcon.svg';
 import LikeIcon from '../../../public/icons/LikeIcon.svg';
 import ShareIcon from '../../../public/icons/ShareIcon.svg';
 import TwitterIcon from '../../../public/icons/TwitterIcon.svg';
-import { changeHue } from '../../utils/changeHue';
 
 enum Themes {
     Dark,
