@@ -1,8 +1,30 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  createSlice,
+} from "@reduxjs/toolkit";
+
+const reducerSlice = createSlice({
+  name: "tweetStore",
+  initialState: {
+    message: "Write your message..",
+    userName: "Judd Trump",
+    userHandle: "@trumpjudd_147",
+    hashTags: ["hash", "tags", "here"],
+    deviceName: "iPhone",
+    isVerified: false,
+  },
+  reducers: {
+    someAction: function () {},
+  },
+});
 
 export function makeStore() {
   return configureStore({
-    reducer: {},
+    reducer: {
+      tweetReducer: reducerSlice.reducer,
+    },
   });
 }
 

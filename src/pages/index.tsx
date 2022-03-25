@@ -22,9 +22,9 @@ const IndexPage: NextPage = () => {
       </Head>
       <header className={styles.header}>
         <TweetCardSimple
-          userHandle='@prakashupadhyay'
-          userName='Prakash Upadhyay'
-          userImageUrl={prefix + '/faces/man-face.jpeg'}
+          userHandle='@trumpjudd_147'
+          userName='Judd Trump'
+          userImageUrl={prefix + '/faces/add-face.png'}
           tweet="Write your message.."
           limit={140}
           hashTags={["hash", "tags", "here"]}

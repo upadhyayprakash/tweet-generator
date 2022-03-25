@@ -7,6 +7,7 @@ import RetweetIcon from '../../../public/icons/RetweetIcon.svg';
 import LikeIcon from '../../../public/icons/LikeIcon.svg';
 import ShareIcon from '../../../public/icons/ShareIcon.svg';
 import TwitterIcon from '../../../public/icons/TwitterIcon.svg';
+import { changeHue } from '../../utils/changeHue';
 
 enum Themes {
     Dark,
@@ -14,16 +15,16 @@ enum Themes {
     Moonlight
 }
 
-const Container = styled.div`
+const Container = styled.div<{ bgColor?: string }>`
     padding: 4em 4em;
     width: 100%;
     max-width: 700px;
-    background-color: #e6e6e6;
+    background-color: ${(props) => props.bgColor || 'rgb(232 211 211 / 50%)'};
     display: flex;
     align-items: center;
     justify-content: center;
     @media (max-width: 425px) {
-        padding: 4em 2em;
+        padding: 4em 1em;
     };
 `;
 
@@ -39,7 +40,15 @@ const Button = styled.button`
     letter-spacing: 1px;
 `;
 
-const HashTag = styled.span`
+const HashTag = styled.span` // styles are applied in <HashListContainer /> tag
+
+`;
+
+const HashListContainer = styled.div`
+    display: flex;
+    gap: 0.3em;
+    justify-content: center;
+    outline: none;
     font-size: 1.3rem;
     font-weight: 400;
     color: #1DA1F2;
@@ -48,23 +57,15 @@ const HashTag = styled.span`
     };
 `;
 
-const HashListContainer = styled.div`
-    display: flex;
-    gap: 0.3em;
-    justify-content: center;
-    outline: none;
-`;
-
 const ProfilePic = styled.div<{ imgUrl?: string }>`
     width: 2em;
     height: 2em;
     border-radius: 50%;
-    border: none;
-    background-size: contain;
-    background-color: #dcdcdc;
+    border: 1px solid rgb(124 124 124 / 25%);
     background-image: ${(props) => `url(${props.imgUrl})`};
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
 `;
 
 const Username = styled.p`
@@ -140,13 +141,7 @@ const TweetContainer = styled.div`
     flex-direction: column;
     align-items: flex-start;
     background-color: white;
-    box-shadow:
-        0px 0px 2.2px rgba(0, 0, 0, 0.034),
-        0px 0px 5.3px rgba(0, 0, 0, 0.048),
-        0px 0px 10px rgba(0, 0, 0, 0.06),
-        0px 0px 17.9px rgba(0, 0, 0, 0.072),
-        0px 0px 33.4px rgba(0, 0, 0, 0.086),
-        0px 0px 80px rgba(0, 0, 0, 0.12);
+    box-shadow: 0px 0px 18px rgba(0, 0, 0, 0.21);
 `;
 
 interface TweetCardSimpleProps {
@@ -179,6 +174,9 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     const userhandleRef = useRef<HTMLDivElement>(null);
     const lastUserhandle = useRef<string>();
 
+    const [hueValue, setHueValue] = useState(0);
+    const [backgroundColor, setBackgroundColor] = useState('rgb(232 211 211 / 50%)');
+
     // create a preview as a side effect, whenever selected file is changed
     useEffect(() => {
         if (!selectedFile) {
@@ -192,6 +190,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
         // free memory when ever this component is unmounted
         return () => URL.revokeObjectURL(objectUrl)
     }, [selectedFile])
+
+    useEffect(() => {
+        setBackgroundColor(hueValue === 360 ? "#ececec" : "hsla(" + ~~(hueValue) + "," + "90%," + "80%,1)");
+    }, [hueValue]);
 
     const onSelectFile = (e) => {
         if (!e.target.files || e.target.files.length === 0) {
@@ -253,11 +255,15 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
         }
     }
 
+    const handleBackgroundChange = () => {
+        setHueValue((hueValue + 40) % 400);
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <Row justify='center'>
-                <Container id="tweetContent">
-                    <TweetContainer>
+                <Container id="tweetContent" bgColor={backgroundColor} onClick={handleBackgroundChange}>
+                    <TweetContainer onClickCapture={(e) => e.stopPropagation()}>
                         <Row align="center" margin="0.5em 0" justify='space-between'>
                             <Col>
                                 <Row align="center" gap={"0.5em"}>
@@ -265,8 +271,8 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                                         <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
                                     </Col>
                                     <Col>
-                                        <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable>{userName}</Username></Row>
-                                        <Row><Userhandle ref={userhandleRef} onInput={handleUserhandleChange} contentEditable>{userHandle}</Userhandle></Row>
+                                        <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable suppressContentEditableWarning>{userName}</Username></Row>
+                                        <Row><Userhandle ref={userhandleRef} onInput={handleUserhandleChange} contentEditable suppressContentEditableWarning>{userHandle}</Userhandle></Row>
                                     </Col>
                                 </Row>
                             </Col>
@@ -275,10 +281,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             </Col>
                         </Row>
                         <Row>
-                            <TweetTextInput suppressContentEditableWarning={true} ref={tweetInputRef} onInput={handleChange} contentEditable>{tweet}</TweetTextInput>
+                            <TweetTextInput ref={tweetInputRef} onInput={handleChange} contentEditable suppressContentEditableWarning>{tweet}</TweetTextInput>
                         </Row>
                         <Row>
-                            <HashListContainer ref={tagInputRef} onInput={handleTagChange} contentEditable>{hashTags.map((tag, idx) => <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>)}</HashListContainer>
+                            <HashListContainer ref={tagInputRef} onInput={handleTagChange} contentEditable suppressContentEditableWarning>{hashTags.map((tag, idx) => <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>)}</HashListContainer>
                         </Row>
                         <Row margin="1em 0 0" align='center' gap="0.5em">
                             <Col><SmallText disabled>{timestamp.getHours() % 12 ? timestamp.getHours() % 12 : 12}:{timestamp.getMinutes() < 10 ? '0' + timestamp.getMinutes() : timestamp.getMinutes()} {+ (timestamp.getHours() >= 12) ? 'PM' : 'AM'}</SmallText></Col>
@@ -306,7 +312,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                     </TweetContainer>
                 </Container>
             </Row>
-            <Button onClick={() => handleDownload('png')}>Export as PNG</Button>
+            <Button onClick={() => handleDownload('png')}>Download</Button>
         </div>
     )
 }
