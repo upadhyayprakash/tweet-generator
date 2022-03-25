@@ -79,6 +79,7 @@ const Userhandle = styled.p`
     font-size: 1rem;
     color: #7c7c7c;
     outline: none;
+    margin-top: 0.1em;
     @media (max-width: 500px) {
         font-size: 0.8rem;
     };
@@ -133,6 +134,7 @@ const TweetTextContainer = styled.div`
     line-height: 2rem;
     font-weight: 400;
     color: #262626;
+    flex: 1;
 `;
 
 const TweetContainer = styled.div`
