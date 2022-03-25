@@ -6,7 +6,7 @@ import RetweetIcon from '../../../public/icons/RetweetIcon.svg';
 import LikeIcon from '../../../public/icons/LikeIcon.svg';
 import ShareIcon from '../../../public/icons/ShareIcon.svg';
 import TwitterIcon from '../../../public/icons/TwitterIcon.svg';
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas';
 
 enum Themes {
     Dark,
@@ -246,12 +246,12 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const handleDownload = (type) => {
         if (type === 'png') {
-            domtoimage.toPng(document.getElementById("tweetContent")).then(function (dataUrl) {
+            html2canvas(document.getElementById("tweetContent")).then(function (canvas) {
                 let dateTime = new Date();
                 let dateTimeStr = dateTime.getFullYear() + "-" + (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + " " + dateTime.getHours() + "H" + (dateTime.getMinutes() < 10 ? "0" + dateTime.getMinutes() : dateTime.getMinutes()) + "M";
                 let link = document.createElement('a');
                 link.download = 'tweet-export-' + dateTimeStr + '.png';
-                link.href = dataUrl;
+                link.href = canvas.toDataURL();
                 link.click();
             })
         }
