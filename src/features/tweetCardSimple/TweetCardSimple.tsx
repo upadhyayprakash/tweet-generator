@@ -22,7 +22,7 @@ const Container = styled.div<{ bgColor?: string }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         padding: 4em 1em;
     };
 `;
@@ -51,7 +51,7 @@ const HashListContainer = styled.div`
     font-size: 1.3rem;
     font-weight: 400;
     color: #1DA1F2;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 1.2rem;
     };
 `;
@@ -71,7 +71,7 @@ const Username = styled.p`
     font-weight: 600;
     font-size: 1rem;
     outline: none;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -79,7 +79,7 @@ const Userhandle = styled.p`
     font-size: 1rem;
     color: #7c7c7c;
     outline: none;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -92,7 +92,7 @@ const SmallText = styled.p<SmallTextProps>`
     font-size: 1rem;
     color: ${(props) => props.disabled ? '#8c8c8c' : props.color === "primary" ? "#1DA1F2" : 'black'};
     white-space: nowrap;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -121,7 +121,7 @@ const TweetTextInput = styled.div`
     text-align: left;
     margin-bottom: 1em;
     outline: none;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 1.1rem;
         line-height: 1.6rem;
     };
