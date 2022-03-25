@@ -272,7 +272,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             <Col size={8}>
                                 <Row align="center" gap={"0.5em"}>
                                     <Col justify="center">
-                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
+                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" accept="image/*" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
                                     </Col>
                                     <Col>
                                         <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable suppressContentEditableWarning>{userName}</Username></Row>
