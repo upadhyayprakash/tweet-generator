@@ -22,7 +22,7 @@ const Container = styled.div<{ bgColor?: string }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         padding: 4em 1em;
     };
 `;
@@ -51,7 +51,7 @@ const HashListContainer = styled.div`
     font-size: 1.3rem;
     font-weight: 400;
     color: #1DA1F2;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 1.2rem;
     };
 `;
@@ -71,7 +71,7 @@ const Username = styled.p`
     font-weight: 600;
     font-size: 1rem;
     outline: none;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -79,7 +79,7 @@ const Userhandle = styled.p`
     font-size: 1rem;
     color: #7c7c7c;
     outline: none;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -92,7 +92,7 @@ const SmallText = styled.p<SmallTextProps>`
     font-size: 1rem;
     color: ${(props) => props.disabled ? '#8c8c8c' : props.color === "primary" ? "#1DA1F2" : 'black'};
     white-space: nowrap;
-    @media (max-width: 425px) {
+    @media (max-width: 500px) {
         font-size: 0.8rem;
     };
 `;
@@ -117,19 +117,22 @@ const HR = styled.hr<HRProps>`
 `;
 
 const TweetTextInput = styled.div`
-    color: #262626;
     width: 100%;
+    text-align: left;
+    margin-bottom: 1em;
+    outline: none;
+    @media (max-width: 500px) {
+        font-size: 1.1rem;
+        line-height: 1.6rem;
+    };
+`;
+
+const TweetTextContainer = styled.div`
     font-family: Ubuntu, Arial;
     font-size: 1.4rem;
     line-height: 2rem;
     font-weight: 400;
-    text-align: left;
-    margin-bottom: 1em;
-    outline: none;
-    @media (max-width: 425px) {
-        font-size: 1.1rem;
-        line-height: 1.6rem;
-    };
+    color: #262626;
 `;
 
 const TweetContainer = styled.div`
@@ -264,7 +267,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                 <Container id="tweetContent" bgColor={backgroundColor} onClick={handleBackgroundChange}>
                     <TweetContainer onClickCapture={(e) => e.stopPropagation()}>
                         <Row align="center" margin="0.5em 0" justify='space-between'>
-                            <Col>
+                            <Col size={8}>
                                 <Row align="center" gap={"0.5em"}>
                                     <Col justify="center">
                                         <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
@@ -275,12 +278,14 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                                     </Col>
                                 </Row>
                             </Col>
-                            <Col>
+                            <Col size={1}>
                                 <TwitterIcon width={'2em'} height={'2em'} fill="#1DA1F2" />
                             </Col>
                         </Row>
                         <Row>
-                            <TweetTextInput ref={tweetInputRef} onInput={handleChange} contentEditable suppressContentEditableWarning>{tweet}</TweetTextInput>
+                            <TweetTextContainer>
+                                <TweetTextInput ref={tweetInputRef} onInput={handleChange} contentEditable suppressContentEditableWarning>{tweet}</TweetTextInput>
+                            </TweetTextContainer>
                         </Row>
                         <Row>
                             <HashListContainer ref={tagInputRef} onInput={handleTagChange} contentEditable suppressContentEditableWarning>{hashTags.map((tag, idx) => <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>)}</HashListContainer>
