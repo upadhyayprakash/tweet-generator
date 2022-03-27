@@ -1,6 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
-import html2canvas from 'html2canvas';
 import domtoimage from 'dom-to-image';
 import { Col, Row } from '../../components/commons';
 import ReplyIcon from '../../../public/icons/ReplyIcon.svg';
@@ -275,14 +274,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const handleDownload = (type) => {
         if (type === 'png') {
-            // html2canvas(document.getElementById("tweetContent")).then(function (canvas) {
-            //     let dateTime = new Date();
-            //     let dateTimeStr = dateTime.getFullYear() + "-" + (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + " " + dateTime.getHours() + "H" + (dateTime.getMinutes() < 10 ? "0" + dateTime.getMinutes() : dateTime.getMinutes()) + "M";
-            //     let link = document.createElement('a');
-            //     link.download = 'tweet-export-' + dateTimeStr + '.png';
-            //     link.href = canvas.toDataURL();
-            //     link.click();
-            // })
             const el = document.getElementById("tweetContent");
             const scale = 3;
             domtoimage.toPng(el, {
