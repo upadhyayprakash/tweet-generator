@@ -32,7 +32,7 @@ const StyledCheckbox = styled.div<{ checked?: boolean }>`
   display: flex;
   width: 16px;
   height: 16px;
-  background: ${props => (props.checked ? '#1da1f1' : '#d9f1ff')};
+  background: ${props => (props.checked ? '#1da1f1' : '#f0f9ff')};
   border: 1px solid #1da1f1;
   border-radius: 3px;
   transition: all 150ms;

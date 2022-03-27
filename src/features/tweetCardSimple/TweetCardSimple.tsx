@@ -1,5 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components'
+import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 import { Col, Row } from '../../components/commons';
 import ReplyIcon from '../../../public/icons/ReplyIcon.svg';
 import RetweetIcon from '../../../public/icons/RetweetIcon.svg';
@@ -7,7 +9,6 @@ import LikeIcon from '../../../public/icons/LikeIcon.svg';
 import ShareIcon from '../../../public/icons/ShareIcon.svg';
 import TwitterIcon from '../../../public/icons/TwitterIcon.svg';
 import VerifiedBadge from '../../../public/icons/VerifiedBadge.svg';
-import html2canvas from 'html2canvas';
 import Checkbox from '../../components/checkbox';
 
 enum Themes {
@@ -16,8 +17,8 @@ enum Themes {
     Moonlight
 }
 
-const Container = styled.div<{ bgColor?: string }>`
-    padding: 4em 4em;
+const Container = styled.div<{ bgColor?: string, isPadded?: boolean }>`
+    padding: ${(props) => props.isPadded ? '4em 4em' : 0};
     width: 100%;
     max-width: 700px;
     background-color: ${(props) => props.bgColor || 'rgb(232 211 211 / 50%)'};
@@ -25,7 +26,7 @@ const Container = styled.div<{ bgColor?: string }>`
     align-items: center;
     justify-content: center;
     @media (max-width: 500px) {
-        padding: 4em 1em;
+        padding: ${(props) => props.isPadded ? '4em 1em' : 0};
     };
 `;
 
@@ -205,6 +206,8 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const [isVerified, setIsVerified] = useState<boolean>(false);
 
+    const [isPadded, setIsPadded] = useState<boolean>(true);
+
     // create a preview as a side effect, whenever selected file is changed
     useEffect(() => {
         if (!selectedFile) {
@@ -220,7 +223,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     }, [selectedFile])
 
     useEffect(() => {
-        setBackgroundColor(hueValue === 360 ? "#ececec" : "hsla(" + ~~(hueValue) + "," + "100%," + "80%,0.2)");
+        setBackgroundColor(hueValue === 360 ? "#ffffff" : "hsla(" + ~~(hueValue) + "," + "100%," + "80%,0.2)");
     }, [hueValue]);
 
     const onSelectFile = (e) => {
@@ -272,14 +275,33 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
 
     const handleDownload = (type) => {
         if (type === 'png') {
-            html2canvas(document.getElementById("tweetContent")).then(function (canvas) {
+            // html2canvas(document.getElementById("tweetContent")).then(function (canvas) {
+            //     let dateTime = new Date();
+            //     let dateTimeStr = dateTime.getFullYear() + "-" + (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + " " + dateTime.getHours() + "H" + (dateTime.getMinutes() < 10 ? "0" + dateTime.getMinutes() : dateTime.getMinutes()) + "M";
+            //     let link = document.createElement('a');
+            //     link.download = 'tweet-export-' + dateTimeStr + '.png';
+            //     link.href = canvas.toDataURL();
+            //     link.click();
+            // })
+            const el = document.getElementById("tweetContent");
+            const scale = 3;
+            domtoimage.toPng(el, {
+                height: el.offsetHeight * scale,
+                width: el.offsetWidth * scale,
+                style: {
+                    transform: "scale(" + scale + ")",
+                    transformOrigin: "top left",
+                    width: el.offsetWidth + "px",
+                    height: el.offsetHeight + "px"
+                }
+            }).then(function (dataUrl) {
                 let dateTime = new Date();
                 let dateTimeStr = dateTime.getFullYear() + "-" + (dateTime.getMonth() + 1) + "-" + dateTime.getDate() + " " + dateTime.getHours() + "H" + (dateTime.getMinutes() < 10 ? "0" + dateTime.getMinutes() : dateTime.getMinutes()) + "M";
                 let link = document.createElement('a');
                 link.download = 'tweet-export-' + dateTimeStr + '.png';
-                link.href = canvas.toDataURL();
+                link.href = dataUrl;
                 link.click();
-            })
+            });
         }
     }
 
@@ -294,10 +316,15 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     const handleVerifiedClick = () => {
         setIsVerified(!isVerified);
     }
+
+    const hidePadding = () => {
+        setIsPadded(!isPadded);
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <Row justify='center'>
-                <Container id="tweetContent" bgColor={backgroundColor} onClick={handleBackgroundChange}>
+                <Container isPadded={isPadded} id="tweetContent" bgColor={backgroundColor} onClick={handleBackgroundChange}>
                     <TweetContainer onClick={(e) => e.stopPropagation()}>
                         <Row align="center" margin="0.5em 0" justify='space-between'>
                             <Col size="8">
@@ -357,13 +384,13 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             </Col>
                         </Row>
                         <HR thickness='0.05em' />
-                        <TwitterIconContainer>
+                        {/* <TwitterIconContainer>
                             <TwitterIcon width={'1.5em'} height={'1.5em'} fill="#1DA1F2" />
-                        </TwitterIconContainer>
+                        </TwitterIconContainer> */}
                     </TweetContainer>
                 </Container>
             </Row>
-            <Row justify='center' align='center'>
+            <Row margin='1em 0 .5em' justify='center' align='center'>
                 <Col>
                     <label>
                         <Checkbox
@@ -371,6 +398,18 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             onChange={handleVerifiedClick}
                         />
                         <Text style={{ marginLeft: 8 }}>is user verified?</Text>
+                    </label>
+                </Col>
+            </Row>
+
+            <Row margin='1em 0 .5em' justify='center' align='center'>
+                <Col>
+                    <label>
+                        <Checkbox
+                            checked={!isPadded}
+                            onChange={hidePadding}
+                        />
+                        <Text style={{ marginLeft: 8 }}>hide background frame?</Text>
                     </label>
                 </Col>
             </Row>
