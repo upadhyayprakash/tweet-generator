@@ -17,7 +17,7 @@ export const Row = styled.div<RowProps>`
 `;
 
 interface ColProps {
-    size?: number;
+    size?: string;
     justify?: string;
     align?: string;
 }
@@ -25,4 +25,5 @@ export const Col = styled.div<ColProps>`
     flex: ${(props) => props.size};
     justify-content: ${(props) => props.justify || "flex-start"};
     align-items: ${(props) => props.align || "flex-start"};
+    min-width: 0;
 `;

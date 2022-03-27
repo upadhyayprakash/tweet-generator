@@ -6,7 +6,9 @@ import RetweetIcon from '../../../public/icons/RetweetIcon.svg';
 import LikeIcon from '../../../public/icons/LikeIcon.svg';
 import ShareIcon from '../../../public/icons/ShareIcon.svg';
 import TwitterIcon from '../../../public/icons/TwitterIcon.svg';
+import VerifiedBadge from '../../../public/icons/VerifiedBadge.svg';
 import html2canvas from 'html2canvas';
+import Checkbox from '../../components/checkbox';
 
 enum Themes {
     Dark,
@@ -71,6 +73,10 @@ const Username = styled.p`
     font-weight: 600;
     font-size: 1rem;
     outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: .2em;
     @media (max-width: 500px) {
         font-size: 0.8rem;
     };
@@ -80,6 +86,9 @@ const Userhandle = styled.p`
     color: #7c7c7c;
     outline: none;
     margin-top: 0.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     @media (max-width: 500px) {
         font-size: 0.8rem;
     };
@@ -138,6 +147,7 @@ const TweetTextContainer = styled.div`
 `;
 
 const TweetContainer = styled.div`
+    position: relative;
     padding: 1em 1em;
     width: 100%;
     max-width: 600px;
@@ -146,6 +156,16 @@ const TweetContainer = styled.div`
     align-items: flex-start;
     background-color: white;
     box-shadow: 0px 0px 18px rgba(0, 0, 0, 0.21);
+`;
+
+const Text = styled.span`
+    font-size: 1rem;
+`;
+
+const TwitterIconContainer = styled.div`
+    position: absolute;
+    top: .1em;
+    right: .1em;
 `;
 
 interface TweetCardSimpleProps {
@@ -158,11 +178,11 @@ interface TweetCardSimpleProps {
     hashTags?: string[];
     theme?: Themes;
     timestamp?: Date;
-    deviceName?: string;
+    deviceList?: string[];
     onChange: (s: string) => any;
     onTagChange: (s: string[]) => any;
 }
-const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userImageUrl, tweet, limit = 140, imageUrl, hashTags, theme, timestamp, deviceName, onChange, onTagChange }) => {
+const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userImageUrl, tweet, limit = 140, imageUrl, hashTags, theme, timestamp, deviceList, onChange, onTagChange }) => {
     const [selectedFile, setSelectedFile] = useState()
     const [userImage, setUserImage] = useState(userImageUrl);
 
@@ -181,6 +201,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     const [hueValue, setHueValue] = useState(0);
     const [backgroundColor, setBackgroundColor] = useState('rgb(232 211 211 / 50%)');
 
+    const [deviceIndex, setDeviceIndex] = useState<number>(0);
+
+    const [isVerified, setIsVerified] = useState<boolean>(false);
+
     // create a preview as a side effect, whenever selected file is changed
     useEffect(() => {
         if (!selectedFile) {
@@ -196,7 +220,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
     }, [selectedFile])
 
     useEffect(() => {
-        setBackgroundColor(hueValue === 360 ? "#ececec" : "hsla(" + ~~(hueValue) + "," + "90%," + "80%,1)");
+        setBackgroundColor(hueValue === 360 ? "#ececec" : "hsla(" + ~~(hueValue) + "," + "100%," + "80%,0.2)");
     }, [hueValue]);
 
     const onSelectFile = (e) => {
@@ -209,7 +233,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
         setSelectedFile(e.target.files[0])
     }
 
-    const handleChange = () => { // Approach: https://stackoverflow.com/a/70028295
+    const handleMessageChange = () => { // Approach: https://stackoverflow.com/a/70028295
         const currTweet = tweetInputRef.current?.innerText || '';
         if (currTweet !== lastTweet.current) {
             onChange(currTweet);
@@ -263,30 +287,48 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
         setHueValue((hueValue + 40) % 400);
     }
 
+    const handleDeviceTap = () => {
+        setDeviceIndex((deviceIndex + 1) % deviceList.length);
+    }
+
+    const handleVerifiedClick = () => {
+        setIsVerified(!isVerified);
+    }
     return (
         <div style={{ width: '100%' }}>
             <Row justify='center'>
                 <Container id="tweetContent" bgColor={backgroundColor} onClick={handleBackgroundChange}>
-                    <TweetContainer onClickCapture={(e) => e.stopPropagation()}>
+                    <TweetContainer onClick={(e) => e.stopPropagation()}>
                         <Row align="center" margin="0.5em 0" justify='space-between'>
-                            <Col size={8}>
+                            <Col size="8">
                                 <Row align="center" gap={"0.5em"}>
-                                    <Col justify="center">
-                                        <Row><label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage"><ProfilePic imgUrl={userImage}></ProfilePic></label><input id="userImage" accept="image/*" style={{ display: 'none' }} type="file" onChange={onSelectFile} /></Row>
+                                    <Col justify="center" style={{ flexShrink: 0 }}>
+                                        <Row>
+                                            <label style={{ display: 'flex', alignItems: 'center', borderRadius: '50%', width: '100%', height: '100%' }} htmlFor="userImage">
+                                                <ProfilePic imgUrl={userImage}></ProfilePic>
+                                            </label>
+                                            <input id="userImage" accept="image/*" style={{ display: 'none' }} type="file" onChange={onSelectFile} />
+                                        </Row>
                                     </Col>
                                     <Col>
-                                        <Row><Username ref={usernameRef} onInput={handleUsernameChange} contentEditable suppressContentEditableWarning>{userName}</Username></Row>
+                                        <Row>
+                                            <Col>
+                                                <Username ref={usernameRef} onInput={handleUsernameChange} contentEditable suppressContentEditableWarning>{userName}</Username>
+                                            </Col>
+                                            {isVerified ?
+                                                <Col style={{ display: 'flex' }}>
+                                                    <VerifiedBadge width={'.9em'} fill="#1DA1F2" />
+                                                </Col>
+                                                : null}
+                                        </Row>
                                         <Row><Userhandle ref={userhandleRef} onInput={handleUserhandleChange} contentEditable suppressContentEditableWarning>{userHandle}</Userhandle></Row>
                                     </Col>
                                 </Row>
                             </Col>
-                            <Col size={1}>
-                                <TwitterIcon width={'2em'} height={'2em'} fill="#1DA1F2" />
-                            </Col>
                         </Row>
                         <Row>
                             <TweetTextContainer>
-                                <TweetTextInput ref={tweetInputRef} onInput={handleChange} contentEditable suppressContentEditableWarning>{tweet}</TweetTextInput>
+                                <TweetTextInput ref={tweetInputRef} onInput={handleMessageChange} contentEditable suppressContentEditableWarning>{tweet}</TweetTextInput>
                             </TweetTextContainer>
                         </Row>
                         <Row>
@@ -297,7 +339,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             <Col><Dot /></Col>
                             <Col><SmallText disabled>{(timestamp.getDate()) + "/" + (timestamp.getMonth() + 1) + "/" + (timestamp.getFullYear())}</SmallText></Col>
                             <Col><Dot /></Col>
-                            <Col><SmallText color="primary">Twitter for {deviceName}</SmallText></Col>
+                            <Col><SmallText color="primary" onClick={handleDeviceTap}>Twitter for {deviceList[deviceIndex]}</SmallText></Col>
                         </Row>
                         <HR thickness='0.05em' />
                         <Row justify='space-around'>
@@ -315,8 +357,22 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({ userHandle, userName, userI
                             </Col>
                         </Row>
                         <HR thickness='0.05em' />
+                        <TwitterIconContainer>
+                            <TwitterIcon width={'1.5em'} height={'1.5em'} fill="#1DA1F2" />
+                        </TwitterIconContainer>
                     </TweetContainer>
                 </Container>
+            </Row>
+            <Row justify='center' align='center'>
+                <Col>
+                    <label>
+                        <Checkbox
+                            checked={isVerified}
+                            onChange={handleVerifiedClick}
+                        />
+                        <Text style={{ marginLeft: 8 }}>is user verified?</Text>
+                    </label>
+                </Col>
             </Row>
             <Button onClick={() => handleDownload('png')}>Download</Button>
         </div>

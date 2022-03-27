@@ -29,7 +29,7 @@ const IndexPage: NextPage = () => {
           limit={140}
           hashTags={["hash", "tags", "here"]}
           timestamp={new Date()}
-          deviceName="iPhone"
+          deviceList={['iPhone', 'Android', 'Web App']}
           onChange={handleTweetChange}
           onTagChange={handleTagChange}
         />
