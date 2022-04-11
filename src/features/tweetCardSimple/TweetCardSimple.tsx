@@ -387,7 +387,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
       const el = document.getElementById("tweetContent");
       const scale = 3;
       domtoimage
-        .toPng(el, {
+        .toPng(el, { // Reference for scaling options: https://github.com/tsayen/dom-to-image/issues/69#issuecomment-486146688
           height: el.offsetHeight * scale,
           width: el.offsetWidth * scale,
           style: {
