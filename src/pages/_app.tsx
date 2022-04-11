@@ -11,7 +11,7 @@ import { useCustomTheme } from "../theme/useTheme";
 import { GlobalStyles } from "../theme/globalStyles";
 
 export const CustomThemeContext = createContext({
-  setTheme: (theme: any) => {},
+  setTheme: (theme: string) => {},
 });
 
 export default function MyApp({ Component, pageProps }: AppProps) {

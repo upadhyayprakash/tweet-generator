@@ -8,11 +8,11 @@ import LikeIcon from "../../../public/icons/LikeIcon.svg";
 import ShareIcon from "../../../public/icons/ShareIcon.svg";
 import TwitterIcon from "../../../public/icons/TwitterIcon.svg";
 import VerifiedBadge from "../../../public/icons/VerifiedBadge.svg";
-import Checkbox from "../../components/checkbox";
 import { IconBackground, IconWrapper } from "../../components/IconWrapper";
-import { getFromLS } from "../../utils/storage";
 import { useCustomTheme } from "../../theme/useTheme";
+import TweetSettings from "../tweetSettings";
 import { CustomThemeContext } from "../../pages/_app";
+import Button from "../../components/Button";
 
 const reactionIconsArray = [
   {
@@ -41,6 +41,14 @@ const reactionIconsArray = [
   },
 ];
 
+const CardContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+`;
+
 const Container = styled.div<{ bgColor?: string; isPadded?: boolean }>`
   padding: ${(props) => (props.isPadded ? "4em 3em" : "0px 0px")};
   width: 100%;
@@ -52,26 +60,6 @@ const Container = styled.div<{ bgColor?: string; isPadded?: boolean }>`
   @media (max-width: 500px) {
     padding: ${(props) => (props.isPadded ? "4em 1em" : 0)};
   } ;
-`;
-
-const Button = styled.button<{
-  bg?: string;
-  color?: string;
-  outline?: boolean;
-}>`
-  padding: 1em 2em;
-  margin: 1em 0;
-  border-radius: 0.5em;
-  background-color: ${(props) => props.bg || props.theme.colors.primary.main};
-  color: ${(props) => props.color || "white"};
-  border: 1px solid
-    ${(props) =>
-    props.outline
-      ? props.color || props.theme.colors.text.primary
-      : "transparent"};
-  font-size: 1.2rem;
-  font-weight: 500;
-  letter-spacing: 1px;
 `;
 
 const HashTag = styled.span`
@@ -141,8 +129,8 @@ const SmallText = styled.p<SmallTextProps>`
     props.disabled
       ? "#8c8c8c"
       : props.color === "primary"
-        ? props.theme.colors.primary.main
-        : "black"};
+      ? props.theme.colors.primary.main
+      : "black"};
   white-space: nowrap;
   @media (max-width: 500px) {
     font-size: 0.8rem;
@@ -201,23 +189,12 @@ const TweetContainer = styled.div`
   box-shadow: 0px 0px 18px ${({ theme }) => theme.colors.borderColor};
 `;
 
-const Text = styled.span`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-const TwitterIconContainer = styled.div`
-  position: absolute;
-  top: 0.1em;
-  right: 0.1em;
-`;
-
 const CountText = styled.span`
   font-size: 1rem;
   color: ${(props) => props.theme.colors.text.secondary};
 `;
 
-const ReactWrapper = styled.div<{ color?: string; bgColor?: string }>`
+const ButtonWrapper = styled.div<{ color?: string; bgColor?: string }>`
   display: flex;
   align-items: center;
   user-select: none;
@@ -261,9 +238,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   onTagChange,
 }) => {
   // theme related
-  const { themes: allThemes } = useCustomTheme();
-  const [data, setData] = useState(allThemes);
-  const [themes, setThemes] = useState([]);
   const { setMode } = useCustomTheme();
   const { setTheme } = useContext(CustomThemeContext);
 
@@ -306,11 +280,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
     useState<boolean>(false);
 
   const [isPadded, setIsPadded] = useState<boolean>(true);
-
-  // Loading local themes
-  useEffect(() => {
-    setThemes(Object.keys(data));
-  }, [data]);
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -387,7 +356,8 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
       const el = document.getElementById("tweetContent");
       const scale = 3;
       domtoimage
-        .toPng(el, { // Reference for scaling options: https://github.com/tsayen/dom-to-image/issues/69#issuecomment-486146688
+        .toPng(el, {
+          // Reference for scaling options: https://github.com/tsayen/dom-to-image/issues/69#issuecomment-486146688
           height: el.offsetHeight * scale,
           width: el.offsetWidth * scale,
           style: {
@@ -445,32 +415,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
     setIsPadded(!isPadded);
   };
 
-  const handleThemeChange = (selectedTheme) => {
+  const handleThemeChange = (selectedTheme: string) => {
     setMode(selectedTheme);
     setTheme(selectedTheme);
   };
-
-  const ThemeButtonGroup = useMemo(() => {
-    return (
-      <Row justify="center" gap="1em">
-        {themes.length > 0 &&
-          themes.map((theme) => {
-            return (
-              <Col key={data[theme].id}>
-                <Button
-                  bg={data[theme].colors?.body}
-                  color={data[theme].colors?.text.primary}
-                  outline
-                  onClick={() => handleThemeChange(data[theme])}
-                >
-                  {data[theme].name}
-                </Button>
-              </Col>
-            );
-          })}
-      </Row>
-    );
-  }, [themes]);
 
   const handleIncrement = (iconId, step = 100) => {
     if (iconId !== "share") {
@@ -491,7 +439,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
           ({ icon: SvgIcon, id, color, bgColor }, index) => {
             return (
               <Col key={index} align="center">
-                <ReactWrapper
+                <ButtonWrapper
                   color={color}
                   bgColor={bgColor}
                   onClick={() => handleIncrement(id, 100)}
@@ -501,7 +449,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                     <SvgIcon width={"1em"} height={"1em"} fill={color} />
                   </IconWrapper>
                   <CountText>{formatCount(count[id])}</CountText>
-                </ReactWrapper>
+                </ButtonWrapper>
               </Col>
             );
           }
@@ -511,263 +459,207 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   }, [count]);
 
   return (
-    <div style={{ width: "100%" }}>
-      <Row margin="0.5em 0 .5em" justify="center" align="center">
-        <Col>
-          <label>
-            <Checkbox checked={isVerified} onChange={handleVerifiedClick} />
-            <Text style={{ marginLeft: 8 }}>is user verified?</Text>
-          </label>
-        </Col>
-      </Row>
-
-      <Row margin="0.5em 0 .5em" justify="center" align="center">
-        <Col>
-          <label>
-            <Checkbox
-              checked={visibilityDateTimeDevice}
-              onChange={hideDateTimeDevice}
-            />
-            <Text style={{ marginLeft: 8 }}>hide date, time and device?</Text>
-          </label>
-        </Col>
-      </Row>
-
-      <Row margin="1em 0 .5em" justify="center" align="center">
-        <Col>
-          <label>
-            <Checkbox checked={visibilityReactions} onChange={hideReactions} />
-            <Text style={{ marginLeft: 8 }}>hide reactions?</Text>
-          </label>
-        </Col>
-      </Row>
-
-      <Row margin="1em 0 .5em" justify="center" align="center">
-        <Col>
-          <label>
-            <Checkbox checked={!isPadded} onChange={hidePadding} />
-            <Text style={{ marginLeft: 8 }}>hide background frame?</Text>
-          </label>
-        </Col>
-      </Row>
-      {ThemeButtonGroup}
-      <Row justify="center">
-        <Container
+    <CardContainer style={{ width: "100%", display: "flex" }}>
+      <Col size="4">
+        <TweetSettings
+          isVerified={isVerified}
+          visibilityDateTimeDevice={visibilityDateTimeDevice}
+          visibilityReactions={visibilityReactions}
           isPadded={isPadded}
-          id="tweetContent"
-          bgColor={backgroundColor}
-          onClick={handleBackgroundChange}
-          style={{ position: "relative" }}
+          handleVerifiedClick={handleVerifiedClick}
+          hideDateTimeDevice={hideDateTimeDevice}
+          hideReactions={hideReactions}
+          hidePadding={hidePadding}
+          handleThemeChange={handleThemeChange}
+        />
+      </Col>
+      <Col size="8">
+        <Row
+          justify="center"
+          style={{ flexDirection: "column", alignItems: "center" }}
         >
-          <TweetContainer onClick={(e) => e.stopPropagation()}>
-            <Row align="center" margin="0.5em 0" justify="space-between">
-              <Col size="8">
-                <Row align="center" gap={"0.5em"}>
-                  <Col justify="center" style={{ flexShrink: 0 }}>
-                    <Row>
-                      <label
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          borderRadius: "50%",
-                          width: "100%",
-                          height: "100%",
-                        }}
-                        htmlFor="userImage"
-                      >
-                        <ProfilePic imgUrl={userImage}></ProfilePic>
-                      </label>
-                      <input
-                        id="userImage"
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        type="file"
-                        onChange={onSelectFile}
-                      />
-                    </Row>
-                  </Col>
-                  <Col>
-                    <Row align="center">
-                      <Col>
-                        <Username
-                          ref={usernameRef}
-                          onInput={handleUsernameChange}
+          <Container
+            isPadded={isPadded}
+            id="tweetContent"
+            bgColor={backgroundColor}
+            onClick={handleBackgroundChange}
+            style={{ position: "relative" }}
+          >
+            <TweetContainer onClick={(e) => e.stopPropagation()}>
+              <Row align="center" margin="0.5em 0" justify="space-between">
+                <Col size="8">
+                  <Row align="center" gap={"0.5em"}>
+                    <Col justify="center" style={{ flexShrink: 0 }}>
+                      <Row>
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            borderRadius: "50%",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                          htmlFor="userImage"
+                        >
+                          <ProfilePic imgUrl={userImage}></ProfilePic>
+                        </label>
+                        <input
+                          id="userImage"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          type="file"
+                          onChange={onSelectFile}
+                        />
+                      </Row>
+                    </Col>
+                    <Col>
+                      <Row align="center">
+                        <Col>
+                          <Username
+                            ref={usernameRef}
+                            onInput={handleUsernameChange}
+                            contentEditable
+                            suppressContentEditableWarning
+                          >
+                            {userName}
+                          </Username>
+                        </Col>
+                        {isVerified ? (
+                          <Col style={{ display: "flex" }}>
+                            <VerifiedBadge
+                              width={".7em"}
+                              fill={theme.colors.badge}
+                            />
+                          </Col>
+                        ) : null}
+                      </Row>
+                      <Row>
+                        <Userhandle
+                          ref={userhandleRef}
+                          onInput={handleUserhandleChange}
                           contentEditable
                           suppressContentEditableWarning
                         >
-                          {userName}
-                        </Username>
-                      </Col>
-                      {isVerified ? (
-                        <Col style={{ display: "flex" }}>
-                          <VerifiedBadge
-                            width={".7em"}
-                            fill={theme.colors.badge}
-                          />
-                        </Col>
-                      ) : null}
-                    </Row>
-                    <Row>
-                      <Userhandle
-                        ref={userhandleRef}
-                        onInput={handleUserhandleChange}
-                        contentEditable
-                        suppressContentEditableWarning
-                      >
-                        {userHandle}
-                      </Userhandle>
-                    </Row>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            <Row>
-              <TweetTextContainer>
-                <TweetTextInput
-                  ref={tweetInputRef}
-                  onInput={handleMessageChange}
+                          {userHandle}
+                        </Userhandle>
+                      </Row>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col>
+                  <Button
+                    rounded
+                    size={"small"}
+                    bg={theme.colors.body}
+                    color={theme.colors.primary.main}
+                    outline
+                  >
+                    Follow
+                  </Button>
+                </Col>
+              </Row>
+              <Row>
+                <TweetTextContainer>
+                  <TweetTextInput
+                    ref={tweetInputRef}
+                    onInput={handleMessageChange}
+                    contentEditable
+                    suppressContentEditableWarning
+                  >
+                    {tweet}
+                  </TweetTextInput>
+                </TweetTextContainer>
+              </Row>
+              <Row margin="0 0 1em">
+                <HashListContainer
+                  ref={tagInputRef}
+                  onInput={handleTagChange}
                   contentEditable
                   suppressContentEditableWarning
                 >
-                  {tweet}
-                </TweetTextInput>
-              </TweetTextContainer>
-            </Row>
-            <Row margin="0 0 1em">
-              <HashListContainer
-                ref={tagInputRef}
-                onInput={handleTagChange}
-                contentEditable
-                suppressContentEditableWarning
-              >
-                {hashTags.map((tag, idx) => (
-                  <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>
-                ))}
-              </HashListContainer>
-            </Row>
-            {!visibilityDateTimeDevice ? (
-              <Row align="center" gap="0.5em">
-                <Col>
-                  <SmallText disabled>
-                    {timestamp.getHours() % 12 ? timestamp.getHours() % 12 : 12}
-                    :
-                    {timestamp.getMinutes() < 10
-                      ? "0" + timestamp.getMinutes()
-                      : timestamp.getMinutes()}{" "}
-                    {+(timestamp.getHours() >= 12) ? "PM" : "AM"}
-                  </SmallText>
-                </Col>
-                <Col>
-                  <Dot />
-                </Col>
-                <Col>
-                  <SmallText disabled>
-                    {timestamp.getDate() +
-                      "/" +
-                      (timestamp.getMonth() + 1) +
-                      "/" +
-                      timestamp.getFullYear()}
-                  </SmallText>
-                </Col>
-                <Col>
-                  <Dot />
-                </Col>
-                <Col>
-                  <SmallText isButton color="primary" onClick={handleDeviceTap}>
-                    Twitter for {deviceList[deviceIndex]}
-                  </SmallText>
-                </Col>
+                  {hashTags.map((tag, idx) => (
+                    <HashTag key={tag + "_" + idx}>{"#" + tag}</HashTag>
+                  ))}
+                </HashListContainer>
               </Row>
-            ) : null}
-            {!visibilityReactions ? (
-              <>
-                <HR thickness="1px" />
-                {ReactionButtonGroup}
-                {/* <Row justify="space-around">
+              {!visibilityDateTimeDevice ? (
+                <Row align="center" gap="0.5em">
                   <Col>
-                    <IconWrapper>
-                      <IconBackground
-                        bgColor="rgba(29,155,240, 0.1)"
-                        color="rgba(29,155,240)"
-                      />
-                      <ReplyIcon
-                        width={"1em"}
-                        height={"1em"}
-                        fill="rgba(29,155,240)"
-                      />
-                    </IconWrapper>
+                    <SmallText disabled>
+                      {timestamp.getHours() % 12
+                        ? timestamp.getHours() % 12
+                        : 12}
+                      :
+                      {timestamp.getMinutes() < 10
+                        ? "0" + timestamp.getMinutes()
+                        : timestamp.getMinutes()}{" "}
+                      {+(timestamp.getHours() >= 12) ? "PM" : "AM"}
+                    </SmallText>
                   </Col>
                   <Col>
-                    <IconWrapper>
-                      <IconBackground
-                        bgColor="rgba(0,186,124, 0.1)"
-                        color="rgba(0,186,124)"
-                      />
-                      <RetweetIcon
-                        width={"1em"}
-                        height={"1em"}
-                        fill="rgba(0,186,124)"
-                      />
-                    </IconWrapper>
+                    <Dot />
                   </Col>
                   <Col>
-                    <IconWrapper>
-                      <IconBackground
-                        bgColor="rgba(249,24,128, 0.1)"
-                        color="rgba(249,24,128)"
-                      />
-                      <LikeIcon
-                        width={"1em"}
-                        height={"1em"}
-                        fill="rgba(249,24,128)"
-                      />
-                    </IconWrapper>
+                    <SmallText disabled>
+                      {timestamp.getDate() +
+                        "/" +
+                        (timestamp.getMonth() + 1) +
+                        "/" +
+                        timestamp.getFullYear()}
+                    </SmallText>
                   </Col>
                   <Col>
-                    <IconWrapper>
-                      <IconBackground
-                        bgColor="rgba(29,155,240, 0.1)"
-                        color="rgba(29,155,240)"
-                      />
-                      <ShareIcon
-                        width={"1em"}
-                        height={"1em"}
-                        fill="rgba(29,155,240)"
-                      />
-                    </IconWrapper>
+                    <Dot />
                   </Col>
-                </Row> */}
-                <HR thickness="1px" />
-              </>
-            ) : null}
-            {/* <TwitterIconContainer>
+                  <Col>
+                    <SmallText
+                      isButton
+                      color="primary"
+                      onClick={handleDeviceTap}
+                    >
+                      Twitter for {deviceList[deviceIndex]}
+                    </SmallText>
+                  </Col>
+                </Row>
+              ) : null}
+              {!visibilityReactions ? (
+                <>
+                  <HR thickness="1px" />
+                  {ReactionButtonGroup}
+                  <HR thickness="1px" />
+                </>
+              ) : null}
+              {/* <TwitterIconContainer>
               <TwitterIcon
                 width={"1.5em"}
                 height={"1.5em"}
                 fill={theme.colors.primary.main}
               />
             </TwitterIconContainer> */}
-          </TweetContainer>
-          <div
-            ref={hidePlaceholderRef}
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              top: 0,
-              zIndex: -1,
-              backgroundColor: "rgba(255,255,255)",
-            }}
-          ></div>
-        </Container>
-      </Row>
-      <Row justify="center">
-        <Col>
-          <Button onClick={() => handleDownload("png")}>Download</Button>
-        </Col>
-      </Row>
-    </div>
+            </TweetContainer>
+            <div
+              ref={hidePlaceholderRef}
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: 0,
+                zIndex: -1,
+                backgroundColor: "rgba(255,255,255)",
+              }}
+            ></div>
+          </Container>
+          <Col>
+            <Row justify="center">
+              <Col>
+                <Button size="big" onClick={() => handleDownload("png")}>Download</Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Col>
+    </CardContainer>
   );
 };
 export default TweetCardSimple;
