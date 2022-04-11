@@ -1,0 +1,50 @@
+{
+  "data": {
+    "light": {
+      "id": 1,
+      "name": "Light",
+      "colors": {
+        "body": "#FFFFFF",
+        "text": {
+          "primary": "#0F1419",
+          "secondary": "#536471"
+        },
+        "primary": {
+          "main": "#1D9BF0",
+          "light": "#e8f5fd",
+          "dark": "#263c4a"
+        },
+        "secondary": {
+          "main": "#FF6961",
+          "light": "#fde8e7",
+          "dark": "#4c2624"
+        },
+        "badge": "#1D9BF0",
+        "borderColor": "#dcdcdc"
+      }
+    },
+    "dark": {
+      "id": 2,
+      "name": "Dark",
+      "colors": {
+        "body": "#15202B",
+        "text": {
+          "primary": "#F7F9F9",
+          "secondary": "#8B98A5"
+        },
+        "primary": {
+          "main": "#1D9BF0",
+          "light": "#e8f5fd",
+          "dark": "#263c4a"
+        },
+        "secondary": {
+          "main": "#1D9BF0",
+          "light": "#e8f5fd",
+          "dark": "#263c4a"
+        },
+        "badge": "#ffffff",
+        "borderColor": "#38444d"
+      }
+    }
+  }
+}
