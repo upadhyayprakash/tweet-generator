@@ -108,4 +108,5 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
     </Row>
   );
 };
+
 export default TweetSettings;
