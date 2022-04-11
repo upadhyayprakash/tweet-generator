@@ -49,6 +49,7 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
                   color={data[theme].colors?.text.primary}
                   outline
                   onClick={() => handleThemeChange(data[theme])}
+                  size="small"
                 >
                   {data[theme].name}
                 </Button>
