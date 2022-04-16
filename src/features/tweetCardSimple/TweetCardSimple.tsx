@@ -53,10 +53,11 @@ const Container = styled.div<{ bgColor?: string; isPadded?: boolean }>`
   padding: ${(props) => (props.isPadded ? "4em 3em" : "0px 0px")};
   width: 100%;
   max-width: 700px;
-  background-color: ${(props) => props.bgColor || "rgb(232 211 211 / 50%)"};
+  background: ${(props) => props.bgColor || "rgb(232 211 211 / 50%)"};
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
   @media (max-width: 500px) {
     padding: ${(props) => (props.isPadded ? "4em 1em" : 0)};
   } ;
@@ -186,7 +187,8 @@ const TweetContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   background-color: ${({ theme }) => theme.colors.body};
-  box-shadow: 0px 0px 18px ${({ theme }) => theme.colors.borderColor};
+  box-shadow: 5px 6px 20px 0px ${({ theme }) => theme.colors.borderColor};
+  border-radius: 10px;
 `;
 
 const CountText = styled.span`
@@ -296,11 +298,18 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   }, [selectedFile]);
 
   useEffect(() => {
-    setBackgroundColor(
-      hueValue === 360
-        ? "rgba(255,255,255, 0.2)"
-        : "hsla(" + ~~hueValue + "," + "100%," + "80%, 0.2)"
-    );
+    let color = "rgba(255,255,255, 0.2)";
+    switch (hueValue) {
+      case 360:
+        color = "rgba(255,255,255, 0.2)";
+        break;
+      case 400:
+        color = "linear-gradient(145deg,#b0f0ba 0%,#6ac0eb 100%)";
+        break;
+      default:
+        color = "hsla(" + ~~hueValue + "," + "100%," + "80%, 0.2)";
+    }
+    setBackgroundColor(color);
   }, [hueValue]);
 
   const onSelectFile = (e) => {
@@ -392,7 +401,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   };
 
   const handleBackgroundChange = () => {
-    setHueValue((hueValue + 40) % 400);
+    setHueValue((hueValue + 40) % 440);
   };
 
   const handleDeviceTap = () => {
@@ -626,7 +635,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                 <>
                   <HR thickness="1px" />
                   {ReactionButtonGroup}
-                  <HR thickness="1px" />
                 </>
               ) : null}
               {/* <TwitterIconContainer>
@@ -646,6 +654,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                 bottom: 0,
                 top: 0,
                 zIndex: -1,
+                borderRadius: "10px",
                 backgroundColor: "rgba(255,255,255)",
               }}
             ></div>
@@ -653,7 +662,9 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
           <Col>
             <Row justify="center">
               <Col>
-                <Button size="big" onClick={() => handleDownload("png")}>Download</Button>
+                <Button size="big" onClick={() => handleDownload("png")}>
+                  Download
+                </Button>
               </Col>
             </Row>
           </Col>
