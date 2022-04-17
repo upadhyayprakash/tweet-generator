@@ -429,10 +429,16 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
     setTheme(selectedTheme);
   };
 
-  const handleIncrement = (iconId, step = 100) => {
+  const handleIncrement = (iconId, mode = "step", step = 100) => {
+    // mode: 'random' | 'step'
     if (iconId !== "share") {
       setCount((prevState) => {
-        return { ...prevState, [iconId]: prevState[iconId] + step };
+        return {
+          ...prevState,
+          [iconId]:
+            prevState[iconId] +
+            (mode === "step" ? step : Math.random() * (100 - 10) + 10),
+        };
       });
     }
   };
@@ -451,7 +457,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                 <ButtonWrapper
                   color={color}
                   bgColor={bgColor}
-                  onClick={() => handleIncrement(id, 100)}
+                  onClick={() => handleIncrement(id, "random")}
                 >
                   <IconWrapper>
                     <IconBackground bgColor={bgColor} color={color} />
@@ -555,7 +561,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                     </Col>
                   </Row>
                 </Col>
-                <Col>
+                {/* <Col>
                   <Button
                     rounded
                     size={"small"}
@@ -565,6 +571,13 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                   >
                     Follow
                   </Button>
+                </Col> */}
+                <Col>
+                  <TwitterIcon
+                    width={"1.5em"}
+                    height={"1.5em"}
+                    fill={theme.colors.primary.main}
+                  />
                 </Col>
               </Row>
               <Row>
@@ -637,13 +650,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                   {ReactionButtonGroup}
                 </>
               ) : null}
-              {/* <TwitterIconContainer>
-              <TwitterIcon
-                width={"1.5em"}
-                height={"1.5em"}
-                fill={theme.colors.primary.main}
-              />
-            </TwitterIconContainer> */}
             </TweetContainer>
             <div
               ref={hidePlaceholderRef}
