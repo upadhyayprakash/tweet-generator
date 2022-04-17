@@ -1,9 +1,23 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 import Text from "../../components/Text";
 import Button from "../../components/Button";
 import { Col, Row } from "../../components/commons";
-import { useCustomTheme } from "../../theme/useTheme";
 import Checkbox from "../../components/Checkbox";
+import Switch from "../../components/Switch";
+import { AppContext } from "../../pages/_app";
+import styled from "styled-components";
+
+const SettingsContainer = styled.div`
+  ${Col}
+  & ${Row}:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+`;
+
+const Span = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1rem;
+`;
 
 interface TweetSettingsTypes {
   isVerified: boolean;
@@ -28,45 +42,46 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
   hidePadding,
   handleThemeChange,
 }) => {
-  const { themes: allThemes } = useCustomTheme();
-  const [data, setData] = useState(allThemes);
-  const [themes, setThemes] = useState([]);
+  const { themes, theme: selectedTheme } = useContext(AppContext);
+  const [themeKeys, setThemeKeys] = useState([]);
 
   // Loading local themes
   useEffect(() => {
-    setThemes(Object.keys(data));
-  }, [data]);
+    setThemeKeys(Object.keys(themes));
+  }, [themes]);
 
   const ThemeButtonGroup = useMemo(() => {
     return (
       <Row justify="center" gap="1em" align="center">
-        {themes.length > 0 &&
-          themes.map((theme) => {
+        {themeKeys.length > 0 &&
+          themeKeys.map((theme) => {
             return (
-              <Col key={data[theme].id}>
+              <Col key={themes[theme].id}>
                 <Button
-                  bg={data[theme].colors?.body}
-                  color={data[theme].colors?.text.primary}
+                  bg={themes[theme].colors?.body}
+                  color={themes[theme].colors?.text.primary}
                   outline
-                  onClick={() => handleThemeChange(data[theme])}
+                  onClick={() => handleThemeChange(theme)}
                   size="small"
                 >
-                  {data[theme].name}
+                  {themes[theme].name}
                 </Button>
               </Col>
             );
           })}
       </Row>
     );
-  }, [themes]);
+  }, [themeKeys]);
   return (
     <Row justify="center">
-      <Col>
-        <Row margin="0.5em 0 .5em" justify="center" align="center">
+      <SettingsContainer>
+        <Row padding="0.5em .5em" justify="space-between" align="center">
+          <Col>
+            <Text style={{ marginRight: 8 }}>is user verified?</Text>
+          </Col>
           <Col>
             <label>
               <Checkbox checked={isVerified} onChange={handleVerifiedClick} />
-              <Text style={{ marginLeft: 8 }}>is user verified?</Text>
             </label>
           </Col>
         </Row>
@@ -83,28 +98,45 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
         </Col>
       </Row> */}
 
-        <Row margin="1em 0 .5em" justify="center" align="center">
+        <Row padding=".5em .5em" justify="space-between" align="center">
+          <Col>
+            <Text style={{ marginRight: 8 }}>hide reactions?</Text>
+          </Col>
           <Col>
             <label>
               <Checkbox
                 checked={visibilityReactions}
                 onChange={hideReactions}
               />
-              <Text style={{ marginLeft: 8 }}>hide reactions?</Text>
             </label>
           </Col>
         </Row>
 
-        <Row margin="1em 0 .5em" justify="center" align="center">
+        <Row padding=".5em .5em" justify="space-between" align="center">
+          <Col>
+            <Text style={{ marginRight: 8 }}>hide background frame?</Text>
+          </Col>
           <Col>
             <label>
               <Checkbox checked={!isPadded} onChange={hidePadding} />
-              <Text style={{ marginLeft: 8 }}>hide background frame?</Text>
             </label>
           </Col>
         </Row>
-        {ThemeButtonGroup}
-      </Col>
+        {/* {ThemeButtonGroup} */}
+        <Row padding="0.5em .5em" justify="space-between" align="center">
+          <Col>
+            {" "}
+            <Text style={{ marginRight: 8 }}>Dark Mode</Text>
+          </Col>
+          <Col>
+            <Switch
+              value={selectedTheme === "dark"}
+              data={themes}
+              onClick={(theme: any) => handleThemeChange(theme)}
+            />
+          </Col>
+        </Row>
+      </SettingsContainer>
     </Row>
   );
 };

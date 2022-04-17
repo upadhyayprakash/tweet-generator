@@ -5,35 +5,42 @@ import { ThemeProvider } from "styled-components";
 
 import store from "../app/store";
 import "../styles/globals.css";
-import * as themes from "../theme/schema.json";
+import * as allThemes from "../theme/schema.json";
 import { setToLS } from "../utils/storage";
 import { useCustomTheme } from "../theme/useTheme";
 import { GlobalStyles } from "../theme/globalStyles";
 
-export const CustomThemeContext = createContext({
+export const AppContext = createContext({
   setTheme: (theme: string) => {},
+  theme: "light",
+  themes: allThemes,
 });
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const { theme, themeLoaded } = useCustomTheme(themes.data.light);
-  const [selectedTheme, setSelectedTheme] = useState(theme);
+  const {
+    selectedTheme: theme,
+    themeLoaded,
+    setTheme,
+    themes,
+  } = useCustomTheme("light");
+  const [selectedTheme, setSelectedTheme] = useState(allThemes.data[theme]);
 
   useEffect(() => {
-    setSelectedTheme(theme);
-  }, [themeLoaded, theme]);
+    setSelectedTheme(allThemes.data[theme]);
+  }, [theme]);
 
   useEffect(() => {
-    setToLS("all-themes", themes.data);
+    setToLS("themes", allThemes.data);
   }, []);
 
   return (
     <Provider store={store}>
       {themeLoaded && (
         <ThemeProvider theme={selectedTheme}>
-          <CustomThemeContext.Provider value={{ setTheme: setSelectedTheme }}>
-            <GlobalStyles />
+          <GlobalStyles />
+          <AppContext.Provider value={{ setTheme, theme, themes }}>
             <Component {...pageProps} />
-          </CustomThemeContext.Provider>
+          </AppContext.Provider>
         </ThemeProvider>
       )}
     </Provider>

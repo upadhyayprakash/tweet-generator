@@ -2,6 +2,7 @@
   "data": {
     "light": {
       "id": 1,
+      "code": "light",
       "name": "Light",
       "colors": {
         "body": "#FFFFFF",
@@ -25,6 +26,7 @@
     },
     "dark": {
       "id": 2,
+      "code": "dark",
       "name": "Dark",
       "colors": {
         "body": "#15202B",
@@ -38,9 +40,9 @@
           "dark": "#263c4a"
         },
         "secondary": {
-          "main": "#1D9BF0",
-          "light": "#e8f5fd",
-          "dark": "#263c4a"
+          "main": "#FF6961",
+          "light": "#fde8e7",
+          "dark": "#4c2624"
         },
         "badge": "#ffffff",
         "borderColor": "#38444d"

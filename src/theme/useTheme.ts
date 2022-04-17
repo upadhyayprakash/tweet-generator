@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { DefaultTheme } from "styled-components";
 import { setToLS, getFromLS } from "../utils/storage";
 
-export const useCustomTheme = (initialTheme?: DefaultTheme) => {
-  const themes = getFromLS("all-themes");
-  const [theme, setTheme] = useState(themes?.data?.light ?? initialTheme);
+export const useCustomTheme = (initialTheme?: string) => {
+  const [themes, setThemes] = useState<any>({});
+  const [selectedTheme, setSelectedTheme] = useState(initialTheme);
   const [themeLoaded, setThemeLoaded] = useState(false);
 
-  const setMode = (mode: string) => {
-    setToLS("theme", mode);
-    setTheme(mode);
+  const setTheme = (theme: any) => {
+    setToLS("selectedTheme", theme);
+    setSelectedTheme(theme);
   };
 
   // const getFonts = () => {
@@ -18,10 +17,15 @@ export const useCustomTheme = (initialTheme?: DefaultTheme) => {
   // };
 
   useEffect(() => {
-    const localTheme = getFromLS("theme");
-    localTheme ? setTheme(localTheme) : setTheme(theme);
+    const localThemes = getFromLS("themes");
+    if (localThemes) setThemes(localThemes);
+
+    const localTheme = getFromLS("selectedTheme");
+    if (localTheme) setSelectedTheme(localTheme);
+    else setTheme(initialTheme);
+
     setThemeLoaded(true);
   }, []);
 
-  return { themes, theme, themeLoaded, setMode };
+  return { themes, selectedTheme, themeLoaded, setTheme };
 };

@@ -7,6 +7,7 @@ interface RowProps {
   align?: string;
   gap?: string;
   margin?: string;
+  padding?: string;
 }
 export const Row = styled.div<RowProps>`
   display: flex;
@@ -15,6 +16,7 @@ export const Row = styled.div<RowProps>`
   align-items: ${(props) => props.align || "flex-start"};
   gap: ${(props) => props.gap};
   margin: ${(props) => props.margin};
+  padding: ${(props) => props.padding};
   width: 100%;
 `;
 

@@ -8,11 +8,11 @@ import LikeIcon from "../../../public/icons/LikeIcon.svg";
 import ShareIcon from "../../../public/icons/ShareIcon.svg";
 import TwitterIcon from "../../../public/icons/TwitterIcon.svg";
 import VerifiedBadge from "../../../public/icons/VerifiedBadge.svg";
+import AddFaceIcon from "../../../public/icons/AddFaceIcon.svg";
 import { IconBackground, IconWrapper } from "../../components/IconWrapper";
-import { useCustomTheme } from "../../theme/useTheme";
 import TweetSettings from "../tweetSettings";
-import { CustomThemeContext } from "../../pages/_app";
 import Button from "../../components/Button";
+import { AppContext } from "../../pages/_app";
 
 const reactionIconsArray = [
   {
@@ -55,6 +55,7 @@ const Container = styled.div<{ bgColor?: string; isPadded?: boolean }>`
   max-width: 700px;
   background: ${(props) => props.bgColor || "rgb(232 211 211 / 50%)"};
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
@@ -187,7 +188,7 @@ const TweetContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   background-color: ${({ theme }) => theme.colors.body};
-  box-shadow: 5px 6px 20px 0px ${({ theme }) => theme.colors.borderColor};
+  box-shadow: 5px 6px 20px 0px ${({ theme }) => theme.colors.text.secondary};
   border-radius: 10px;
 `;
 
@@ -211,6 +212,16 @@ const ButtonWrapper = styled.div<{ color?: string; bgColor?: string }>`
       fill: ${(props) => props.color};
     }
   }
+`;
+
+const AddFaceIconContainer = styled.div`
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 1em;
+  height: 1em;
+  background-color: white;
+  border-radius: 50%;
 `;
 
 interface TweetCardSimpleProps {
@@ -240,14 +251,15 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   onTagChange,
 }) => {
   // theme related
-  const { setMode } = useCustomTheme();
-  const { setTheme } = useContext(CustomThemeContext);
+  const { setTheme } = useContext(AppContext);
 
   // styled-components theme object
   const theme: DefaultTheme = useTheme();
 
   // hide bgColor placeholder with help of this ref
   const hidePlaceholderRef = useRef<HTMLDivElement>(null);
+  const hideAddFaceIconRef = useRef<HTMLDivElement>(null);
+  const hideTapMessage = useRef<HTMLDivElement>(null);
 
   const [count, setCount] = useState({ reply: 0, retweet: 0, like: 0 });
 
@@ -307,7 +319,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
         color = "linear-gradient(145deg,#b0f0ba 0%,#6ac0eb 100%)";
         break;
       default:
-        color = "hsla(" + ~~hueValue + "," + "100%," + "80%, 0.2)";
+        color = "hsla(" + ~~hueValue + "," + "100%," + "80%, 0.5)";
     }
     setBackgroundColor(color);
   }, [hueValue]);
@@ -375,7 +387,12 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
             width: el.offsetWidth + "px",
             height: el.offsetHeight + "px",
           },
-          filter: (node) => node !== hidePlaceholderRef.current, // hiding bg placeholder component
+          filter: (node) =>
+            ![
+              hidePlaceholderRef.current,
+              hideAddFaceIconRef.current,
+              hideTapMessage.current,
+            ].includes(node as HTMLDivElement), // filtering out hidden component
         })
         .then(function (dataUrl) {
           let dateTime = new Date();
@@ -424,8 +441,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
     setIsPadded(!isPadded);
   };
 
-  const handleThemeChange = (selectedTheme: string) => {
-    setMode(selectedTheme);
+  const handleThemeChange = (selectedTheme: any) => {
     setTheme(selectedTheme);
   };
 
@@ -474,7 +490,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
   }, [count]);
 
   return (
-    <CardContainer style={{ width: "100%", display: "flex" }}>
+    <CardContainer style={{ width: "100%", display: "flex", gap: "1em" }}>
       <Col size="4">
         <TweetSettings
           isVerified={isVerified}
@@ -513,10 +529,18 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                             borderRadius: "50%",
                             width: "100%",
                             height: "100%",
+                            position: "relative",
                           }}
                           htmlFor="userImage"
                         >
                           <ProfilePic imgUrl={userImage}></ProfilePic>
+                          <AddFaceIconContainer ref={hideAddFaceIconRef}>
+                            <AddFaceIcon
+                              width={"1em"}
+                              height={"1em"}
+                              fill={theme.colors.primary.main}
+                            />
+                          </AddFaceIconContainer>
                         </label>
                         <input
                           id="userImage"
@@ -652,6 +676,19 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
               ) : null}
             </TweetContainer>
             <div
+              ref={hideTapMessage}
+              style={{ position: "absolute", bottom: "1em" }}
+            >
+              <span
+                style={{
+                  color: theme.colors.text.secondary,
+                  userSelect: "none",
+                }}
+              >
+                Tap here to change background
+              </span>
+            </div>
+            <div
               ref={hidePlaceholderRef}
               style={{
                 position: "absolute",
@@ -668,7 +705,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
           <Col>
             <Row justify="center">
               <Col>
-                <Button size="big" onClick={() => handleDownload("png")}>
+                <Button size="regular" onClick={() => handleDownload("png")}>
                   Download
                 </Button>
               </Col>
