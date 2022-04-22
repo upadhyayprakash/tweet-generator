@@ -52,11 +52,10 @@ const InputCheckbox = styled.input`
 interface SwitchProps {
   label?: string;
   value?: boolean;
-  data: any;
   onClick: (mode: string) => void;
 }
 
-const Switch: FC<SwitchProps> = ({ label, data, value = false, onClick }) => {
+const Switch: FC<SwitchProps> = ({ label, value = false, onClick }) => {
   const [isToggled, setIsToggle] = useState<boolean>(value);
   const onToggle = () => {
     if (isToggled) onClick("light");

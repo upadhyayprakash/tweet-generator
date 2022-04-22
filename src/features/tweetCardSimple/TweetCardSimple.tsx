@@ -283,6 +283,10 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
     "rgb(232 211 211 / 50%)"
   );
 
+  const bgTextColor = useMemo(() => {
+    return "hsla(" + ~~hueValue + "," + "30%," + "60%, 1)";
+  }, [hueValue]);
+
   const [deviceIndex, setDeviceIndex] = useState<number>(0);
 
   const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -553,7 +557,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                     </Col>
                     <Col>
                       <Row align="center">
-                        <Col>
                           <Username
                             ref={usernameRef}
                             onInput={handleUsernameChange}
@@ -562,7 +565,6 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                           >
                             {userName}
                           </Username>
-                        </Col>
                         {isVerified ? (
                           <Col style={{ display: "flex" }}>
                             <VerifiedBadge
@@ -681,8 +683,12 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
             >
               <span
                 style={{
-                  color: theme.colors.text.secondary,
+                  color: bgTextColor,
                   userSelect: "none",
+                  fontSize: "0.9rem",
+                  textTransform: "uppercase",
+                  fontWeight: "700",
+                  letterSpacing: "0.03em",
                 }}
               >
                 Tap here to change background

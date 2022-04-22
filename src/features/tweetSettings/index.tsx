@@ -80,9 +80,10 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
             <Text style={{ marginRight: 8 }}>is user verified?</Text>
           </Col>
           <Col>
-            <label>
+            <Switch value={isVerified} onClick={handleVerifiedClick} />
+            {/* <label>
               <Checkbox checked={isVerified} onChange={handleVerifiedClick} />
-            </label>
+            </label> */}
           </Col>
         </Row>
 
@@ -103,12 +104,13 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
             <Text style={{ marginRight: 8 }}>hide reactions?</Text>
           </Col>
           <Col>
-            <label>
+            <Switch value={visibilityReactions} onClick={hideReactions} />
+            {/* <label>
               <Checkbox
                 checked={visibilityReactions}
                 onChange={hideReactions}
               />
-            </label>
+            </label> */}
           </Col>
         </Row>
 
@@ -117,9 +119,10 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
             <Text style={{ marginRight: 8 }}>hide background frame?</Text>
           </Col>
           <Col>
-            <label>
+            <Switch value={!isPadded} onClick={hidePadding} />
+            {/* <label>
               <Checkbox checked={!isPadded} onChange={hidePadding} />
-            </label>
+            </label> */}
           </Col>
         </Row>
         {/* {ThemeButtonGroup} */}
@@ -131,7 +134,6 @@ const TweetSettings: FC<TweetSettingsTypes> = ({
           <Col>
             <Switch
               value={selectedTheme === "dark"}
-              data={themes}
               onClick={(theme: any) => handleThemeChange(theme)}
             />
           </Col>
