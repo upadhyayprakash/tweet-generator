@@ -412,7 +412,9 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
             (dateTime.getMinutes() < 10
               ? "0" + dateTime.getMinutes()
               : dateTime.getMinutes()) +
-            "M";
+            "M" +
+            dateTime.getSeconds() +
+            "S";
           let link = document.createElement("a");
           link.download = "tweet-export-" + dateTimeStr + ".png";
           link.href = dataUrl;
@@ -557,6 +559,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                     </Col>
                     <Col>
                       <Row align="center">
+                        <Col>
                           <Username
                             ref={usernameRef}
                             onInput={handleUsernameChange}
@@ -565,6 +568,7 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                           >
                             {userName}
                           </Username>
+                        </Col>
                         {isVerified ? (
                           <Col style={{ display: "flex" }}>
                             <VerifiedBadge
@@ -575,14 +579,16 @@ const TweetCardSimple: FC<TweetCardSimpleProps> = ({
                         ) : null}
                       </Row>
                       <Row>
-                        <Userhandle
-                          ref={userhandleRef}
-                          onInput={handleUserhandleChange}
-                          contentEditable
-                          suppressContentEditableWarning
-                        >
-                          {userHandle}
-                        </Userhandle>
+                        <Col>
+                          <Userhandle
+                            ref={userhandleRef}
+                            onInput={handleUserhandleChange}
+                            contentEditable
+                            suppressContentEditableWarning
+                          >
+                            {userHandle}
+                          </Userhandle>
+                        </Col>
                       </Row>
                     </Col>
                   </Row>
